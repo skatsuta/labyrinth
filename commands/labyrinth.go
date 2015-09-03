@@ -29,7 +29,7 @@ import (
 )
 
 // TODO: Your name here
-var AuthorName = ""
+var AuthorName = "Soshi Katsuta"
 
 var CfgFile string
 
