@@ -30,6 +30,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Maze is a maze.
 type Maze struct {
 	rooms      [][]mazelib.Room
 	start      mazelib.Coordinate
@@ -77,7 +78,7 @@ func init() {
 	RootCmd.AddCommand(daedalusCmd)
 }
 
-// Runs the web server
+// RunServer runs the web server.
 func RunServer() {
 	// Adding handling so that even when ctrl+c is pressed we still print
 	// out the results prior to exiting.
@@ -101,7 +102,7 @@ func RunServer() {
 	r.Run(":" + viper.GetString("port"))
 }
 
-// Ends a session and prints the results.
+// End ends a session and prints the results.
 // Called by Icarus when he has reached
 //   the number of times he wants to solve the laybrinth.
 func End(c *gin.Context) {
@@ -109,7 +110,7 @@ func End(c *gin.Context) {
 	os.Exit(1)
 }
 
-// initializes a new maze and places Icarus in his awakening location
+// GetStartingPoint initializes a new maze and places Icarus in his awakening location
 func GetStartingPoint(c *gin.Context) {
 	initializeMaze()
 	startRoom, err := currentMaze.Discover(currentMaze.Icarus())
@@ -123,7 +124,7 @@ func GetStartingPoint(c *gin.Context) {
 	c.JSON(http.StatusOK, mazelib.Reply{Survey: startRoom})
 }
 
-// The API response to the /move/:direction address
+// MoveDirection returns the API response to the /move/:direction address
 func MoveDirection(c *gin.Context) {
 	var err error
 
@@ -174,7 +175,7 @@ func printResults() {
 	fmt.Printf("Labyrinth solved %d times with an avg of %d steps\n", len(scores), mazelib.AvgScores(scores))
 }
 
-// Return a room from the maze
+// GetRoom returns a room from the maze
 func (m *Maze) GetRoom(x, y int) (*mazelib.Room, error) {
 	if x < 0 || y < 0 || x >= m.Width() || y >= m.Height() {
 		return &mazelib.Room{}, errors.New("room outside of maze boundaries")
@@ -183,15 +184,18 @@ func (m *Maze) GetRoom(x, y int) (*mazelib.Room, error) {
 	return &m.rooms[y][x], nil
 }
 
-func (m *Maze) Width() int  { return len(m.rooms[0]) }
+// Width returns the width of a maze.
+func (m *Maze) Width() int { return len(m.rooms[0]) }
+
+// Height returns the height of a maze.
 func (m *Maze) Height() int { return len(m.rooms) }
 
-// Return Icarus's current position
+// Icarus returns Icarus's current position
 func (m *Maze) Icarus() (x, y int) {
 	return m.icarus.X, m.icarus.Y
 }
 
-// Set the location where Icarus will awake
+// SetStartPoint sets the location where Icarus will awake
 func (m *Maze) SetStartPoint(x, y int) error {
 	r, err := m.GetRoom(x, y)
 
@@ -208,7 +212,7 @@ func (m *Maze) SetStartPoint(x, y int) error {
 	return nil
 }
 
-// Set the location of the treasure for a given maze
+// SetTreasure sets the location of the treasure for a given maze
 func (m *Maze) SetTreasure(x, y int) error {
 	r, err := m.GetRoom(x, y)
 
@@ -225,8 +229,8 @@ func (m *Maze) SetTreasure(x, y int) error {
 	return nil
 }
 
-// Given Icarus's current location, Discover that room
-// Will return ErrVictory if Icarus is at the treasure.
+// LookAround discovers that room when given Icarus's current location.
+// It will return ErrVictory if Icarus is at the treasure.
 func (m *Maze) LookAround() (mazelib.Survey, error) {
 	if m.end.X == m.icarus.X && m.end.Y == m.icarus.Y {
 		fmt.Printf("Victory achieved in %d steps \n", m.StepsTaken)
@@ -236,17 +240,17 @@ func (m *Maze) LookAround() (mazelib.Survey, error) {
 	return m.Discover(m.icarus.X, m.icarus.Y)
 }
 
-// Given two points, survey the room.
-// Will return error if two points are outside of the maze
+// Discover survey the room when given two points.
+// It will return error if two points are outside of the maze
 func (m *Maze) Discover(x, y int) (mazelib.Survey, error) {
-	if r, err := m.GetRoom(x, y); err != nil {
+	r, err := m.GetRoom(x, y)
+	if err != nil {
 		return mazelib.Survey{}, nil
-	} else {
-		return r.Walls, nil
 	}
+	return r.Walls, nil
 }
 
-// Moves Icarus's position left one step
+// MoveLeft moves Icarus's position left one step
 // Will not permit moving through walls or out of the maze
 func (m *Maze) MoveLeft() error {
 	s, e := m.LookAround()
@@ -267,7 +271,7 @@ func (m *Maze) MoveLeft() error {
 	return nil
 }
 
-// Moves Icarus's position right one step
+// MoveRight moves Icarus's position right one step
 // Will not permit moving through walls or out of the maze
 func (m *Maze) MoveRight() error {
 	s, e := m.LookAround()
@@ -288,7 +292,7 @@ func (m *Maze) MoveRight() error {
 	return nil
 }
 
-// Moves Icarus's position up one step
+// MoveUp moves Icarus's position up one step
 // Will not permit moving through walls or out of the maze
 func (m *Maze) MoveUp() error {
 	s, e := m.LookAround()
@@ -309,7 +313,7 @@ func (m *Maze) MoveUp() error {
 	return nil
 }
 
-// Moves Icarus's position down one step
+// MoveDown moves Icarus's position down one step
 // Will not permit moving through walls or out of the maze
 func (m *Maze) MoveDown() error {
 	s, e := m.LookAround()
