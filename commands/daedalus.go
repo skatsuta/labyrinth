@@ -66,8 +66,8 @@ func init() {
 	rand.Seed(time.Now().UTC().UnixNano()) // need to initialize the seed
 	gin.SetMode(gin.ReleaseMode)
 
-	daedalusCmd.Flags().IntP("width", "w", 15, "width of the laybrinth")
-	daedalusCmd.Flags().IntP("height", "t", 10, "height of the laybrinth")
+	//daedalusCmd.Flags().IntP("width", "w", 15, "width of the laybrinth")
+	//daedalusCmd.Flags().IntP("height", "t", 10, "height of the laybrinth")
 
 	// Bind viper to these flags so viper can also read them from config, env, etc.
 	viper.SetDefault("width", 15)
