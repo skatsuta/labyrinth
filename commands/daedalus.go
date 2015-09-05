@@ -367,13 +367,71 @@ func fullMaze(xSize, ySize int) *Maze {
 }
 
 // TODO: Write your maze creator function here
-func createMaze(x, y int) *Maze {
+func createMaze(xSize, ySize int) *Maze {
+	return sidewinder(xSize, ySize)
+}
 
-	// TODO: Fill in the maze:
-	// You need to insert a startingPoint for Icarus
-	// You need to insert an EndingPoint (treasure) for Icarus
-	// You need to Add and Remove walls as needed.
-	// Use the mazelib.AddWall & mazelib.RmWall to do this
+// sidewinder creates a maze by using sidewinder algorithm.
+func sidewinder(xSize, ySize int) *Maze {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	z := fullMaze(xSize, ySize)
 
-	return emptyMaze(x, y)
+	if e := z.SetStartPoint(0, 0); e != nil {
+		return emptyMaze(xSize, ySize)
+	}
+	if e := z.SetTreasure(z.Width()-1, z.Height()-1); e != nil {
+		return emptyMaze(xSize, ySize)
+	}
+
+	for y := range z.rooms {
+		run := make([]*mazelib.Room, len(z.rooms[y]))
+
+		for x := range z.rooms[y] {
+			room, err := z.GetRoom(x, y)
+			if err != nil {
+				return emptyMaze(xSize, ySize)
+			}
+			run = append(run, room)
+
+			atEasternBoundary := x == len(z.rooms[y])-1
+			atNorthanBoundary := y == 0
+
+			shouldCloseOut := atEasternBoundary ||
+				(!atNorthanBoundary && r.Intn(2) == 0)
+
+			if shouldCloseOut {
+				idx := r.Intn(len(run))
+				member := run[idx]
+				if member != nil {
+					member.RmWall(mazelib.N)
+				}
+				if y > 0 {
+					top, err := z.GetRoom(x, y-1)
+					if err != nil {
+						fmt.Printf("maze: %d by %d\n", z.Width(), z.Height())
+						fmt.Printf("(%d, %d): %v\n", y, x, err)
+						return emptyMaze(xSize, ySize)
+					}
+					top.RmWall(mazelib.S)
+				}
+				run = run[:0]
+				fmt.Printf("remove N(%2d, %2d) and S(%2d, %2d)\n", x, y, x, y-1)
+			} else {
+				if x < len(z.rooms[y])-1 {
+					room.RmWall(mazelib.E)
+					right, err := z.GetRoom(x+1, y)
+					if err != nil {
+						fmt.Printf("maze: %d by %d\n", z.Width(), z.Height())
+						fmt.Printf("z.rooms[i]: %d\n", len(z.rooms[y]))
+						fmt.Printf("(%d, %d): %v\n", y, x, err)
+						return fullMaze(xSize, ySize)
+					}
+					right.RmWall(mazelib.W)
+				}
+				fmt.Printf("remove E(%2d, %2d) and W(%2d, %2d)\n", x, y, x+1, y)
+			}
+		}
+	}
+
+	return z
 }
