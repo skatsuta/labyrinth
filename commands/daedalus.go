@@ -408,27 +408,20 @@ func sidewinder(xSize, ySize int) *Maze {
 				if y > 0 {
 					top, err := z.GetRoom(x, y-1)
 					if err != nil {
-						fmt.Printf("maze: %d by %d\n", z.Width(), z.Height())
-						fmt.Printf("(%d, %d): %v\n", y, x, err)
 						return emptyMaze(xSize, ySize)
 					}
 					top.RmWall(mazelib.S)
 				}
 				run = run[:0]
-				fmt.Printf("remove N(%2d, %2d) and S(%2d, %2d)\n", x, y, x, y-1)
 			} else {
 				if x < len(z.rooms[y])-1 {
 					room.RmWall(mazelib.E)
 					right, err := z.GetRoom(x+1, y)
 					if err != nil {
-						fmt.Printf("maze: %d by %d\n", z.Width(), z.Height())
-						fmt.Printf("z.rooms[i]: %d\n", len(z.rooms[y]))
-						fmt.Printf("(%d, %d): %v\n", y, x, err)
-						return fullMaze(xSize, ySize)
+						return emptyMaze(xSize, ySize)
 					}
 					right.RmWall(mazelib.W)
 				}
-				fmt.Printf("remove E(%2d, %2d) and W(%2d, %2d)\n", x, y, x+1, y)
 			}
 		}
 	}
