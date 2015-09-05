@@ -112,7 +112,9 @@ func End(c *gin.Context) {
 
 // GetStartingPoint initializes a new maze and places Icarus in his awakening location
 func GetStartingPoint(c *gin.Context) {
-	initializeMaze()
+	ySize := viper.GetInt("height")
+	xSize := viper.GetInt("width")
+	initializeMaze(xSize, ySize)
 	startRoom, err := currentMaze.Discover(currentMaze.Icarus())
 	if err != nil {
 		fmt.Println("Icarus is outside of the maze. This shouldn't ever happen")
@@ -166,8 +168,8 @@ func MoveDirection(c *gin.Context) {
 	c.JSON(http.StatusOK, r)
 }
 
-func initializeMaze() {
-	currentMaze = createMaze()
+func initializeMaze(x, y int) {
+	currentMaze = createMaze(x, y)
 }
 
 // Print to the terminal the average steps to solution for the current session
@@ -336,10 +338,8 @@ func (m *Maze) MoveDown() error {
 
 // Creates a maze without any walls
 // Good starting point for additive algorithms
-func emptyMaze() *Maze {
+func emptyMaze(xSize, ySize int) *Maze {
 	z := Maze{}
-	ySize := viper.GetInt("height")
-	xSize := viper.GetInt("width")
 
 	z.rooms = make([][]mazelib.Room, ySize)
 	for y := 0; y < ySize; y++ {
@@ -354,10 +354,8 @@ func emptyMaze() *Maze {
 
 // Creates a maze with all walls
 // Good starting point for subtractive algorithms
-func fullMaze() *Maze {
-	z := emptyMaze()
-	ySize := viper.GetInt("height")
-	xSize := viper.GetInt("width")
+func fullMaze(xSize, ySize int) *Maze {
+	z := emptyMaze(xSize, ySize)
 
 	for y := 0; y < ySize; y++ {
 		for x := 0; x < xSize; x++ {
@@ -369,7 +367,7 @@ func fullMaze() *Maze {
 }
 
 // TODO: Write your maze creator function here
-func createMaze() *Maze {
+func createMaze(x, y int) *Maze {
 
 	// TODO: Fill in the maze:
 	// You need to insert a startingPoint for Icarus
@@ -377,5 +375,5 @@ func createMaze() *Maze {
 	// You need to Add and Remove walls as needed.
 	// Use the mazelib.AddWall & mazelib.RmWall to do this
 
-	return emptyMaze()
+	return emptyMaze(x, y)
 }
