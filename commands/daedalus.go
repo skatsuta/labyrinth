@@ -346,6 +346,31 @@ func emptyMaze(xSize, ySize int) *Maze {
 	return &z
 }
 
+func configureRooms(z *Maze) {
+	dirs := []mazelib.Direction{mazelib.N, mazelib.E, mazelib.S, mazelib.W}
+
+	w, h := z.Width(), z.Height()
+	for y := 0; y < h; y++ {
+		for x := 0; x < w; x++ {
+			room, err := z.GetRoom(x, y)
+			if err != nil {
+				continue
+			}
+
+			// init Nbr field
+			room.Nbr = make(map[mazelib.Direction]*mazelib.Room)
+
+			// north, east, south, west
+			coords := [][]int{{x, y - 1}, {x + 1, y}, {x, y + 1}, {x - 1, y}}
+			for i, coord := range coords {
+				if nbr, err := z.GetRoom(coord[0], coord[1]); err == nil {
+					room.Nbr[dirs[i]] = nbr
+				}
+			}
+		}
+	}
+}
+
 // Creates a maze with all walls
 // Good starting point for subtractive algorithms
 func fullMaze(xSize, ySize int) *Maze {

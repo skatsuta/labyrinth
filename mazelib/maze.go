@@ -71,7 +71,7 @@ type Room struct {
 	Start    bool
 	Visited  bool
 	Walls    Survey
-	nbr      map[Direction]*Room
+	Nbr      map[Direction]*Room
 }
 
 // AddWall adds a wall in the `dir` direction.
