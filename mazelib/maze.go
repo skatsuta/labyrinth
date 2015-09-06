@@ -49,13 +49,18 @@ type Survey struct {
 }
 
 const (
+	// N is the north.
 	N = 1
+	// S is the south.
 	S = 2
+	// E is the east.
 	E = 3
+	// W is the west.
 	W = 4
 )
 
-var ErrVictory error = errors.New("Victory")
+// ErrVictory is an error representing the victory of Icarus.
+var ErrVictory = errors.New("Victory")
 
 // Room contains the minimum informaion about a room in the maze.
 type Room struct {
@@ -65,6 +70,7 @@ type Room struct {
 	Walls    Survey
 }
 
+// AddWall adds a wall in the `dir` direction.
 func (r *Room) AddWall(dir int) {
 	switch dir {
 	case N:
@@ -78,6 +84,7 @@ func (r *Room) AddWall(dir int) {
 	}
 }
 
+// RmWall removes a wall in the `dir` direction.
 func (r *Room) RmWall(dir int) {
 	switch dir {
 	case N:
@@ -107,12 +114,13 @@ type MazeI interface {
 	MoveDown() error
 }
 
+// AvgScores calculates the avarage of `in`.
 func AvgScores(in []int) int {
 	if len(in) == 0 {
 		return 0
 	}
 
-	var total int = 0
+	total := 0
 
 	for _, x := range in {
 		total += x

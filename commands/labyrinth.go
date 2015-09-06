@@ -16,7 +16,6 @@
 // Package commands defines and implements command-line commands
 // and flags used by laybrinth.
 // Commands and flags are implemented using cobra.
-
 package commands
 
 import (
@@ -31,6 +30,7 @@ import (
 // TODO: Your name here
 var AuthorName = "Soshi Katsuta"
 
+// CfgFile is a config file.
 var CfgFile string
 
 // Defining the daedalus command.
