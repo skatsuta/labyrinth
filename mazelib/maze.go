@@ -99,6 +99,15 @@ func (r *Room) RmWall(dir Direction) {
 	}
 }
 
+// Neighbors returns all the neighbors around `r`.
+func (r *Room) Neighbors() []*Room {
+	nbrs := make([]*Room, 0, len(r.Nbr))
+	for _, nbr := range r.Nbr {
+		nbrs = append(nbrs, nbr)
+	}
+	return nbrs
+}
+
 // MazeI Interface
 type MazeI interface {
 	GetRoom(x, y int) (*Room, error)
