@@ -75,11 +75,11 @@ func init() {
 	RootCmd.PersistentFlags().IntP("max-steps", "m", 500, "Maximum steps before giving up")
 
 	// Bind viper to these flags so viper can read flag values along with config, env, etc.
-	viper.BindPFlag("width", RootCmd.PersistentFlags().Lookup("width"))
-	viper.BindPFlag("height", RootCmd.PersistentFlags().Lookup("height"))
-	viper.BindPFlag("port", RootCmd.PersistentFlags().Lookup("port"))
-	viper.BindPFlag("times", RootCmd.PersistentFlags().Lookup("times"))
-	viper.BindPFlag("max-steps", RootCmd.PersistentFlags().Lookup("max-steps"))
+	_ = viper.BindPFlag("width", RootCmd.PersistentFlags().Lookup("width"))
+	_ = viper.BindPFlag("height", RootCmd.PersistentFlags().Lookup("height"))
+	_ = viper.BindPFlag("port", RootCmd.PersistentFlags().Lookup("port"))
+	_ = viper.BindPFlag("times", RootCmd.PersistentFlags().Lookup("times"))
+	_ = viper.BindPFlag("max-steps", RootCmd.PersistentFlags().Lookup("max-steps"))
 }
 
 // Read in config file and ENV variables if set.

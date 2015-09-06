@@ -113,7 +113,7 @@ func makeRequest(url string) ([]byte, error) {
 // ToReply handles a JSON response and unmarshalling it into a reply struct
 func ToReply(in []byte) mazelib.Reply {
 	res := &mazelib.Reply{}
-	json.Unmarshal(in, &res)
+	_ = json.Unmarshal(in, &res)
 	return *res
 }
 
