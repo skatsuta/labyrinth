@@ -51,15 +51,12 @@ type Survey struct {
 // Direction is a direction.
 type Direction int
 
+// N, S, E, W are directions to north, south, east and west.
 const (
-	// N is the north.
 	N Direction = 1
-	// S is the south.
-	S = 2
-	// E is the east.
-	E = 3
-	// W is the west.
-	W = 4
+	S           = 2
+	E           = 3
+	W           = 4
 )
 
 // ErrVictory is an error representing the victory of Icarus.
