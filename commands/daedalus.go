@@ -91,7 +91,9 @@ func RunServer() {
 		v1.GET("/done", End)
 	}
 
-	r.Run(":" + viper.GetString("port"))
+	if e := r.Run(":" + viper.GetString("port")); e != nil {
+		panic(e)
+	}
 }
 
 // End ends a session and prints the results.

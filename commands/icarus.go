@@ -57,7 +57,7 @@ func RunIcarus() {
 	}
 
 	// Once we have solved the maze the required times, tell daedalus we are done
-	makeRequest("http://127.0.0.1:" + viper.GetString("port") + "/done")
+	_, _ = makeRequest("http://127.0.0.1:" + viper.GetString("port") + "/done")
 }
 
 // Make a call to the laybrinth server (daedalus) that icarus is ready to wake up
@@ -100,7 +100,9 @@ func makeRequest(url string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer response.Body.Close()
+	defer func() {
+		_ = response.Body.Close()
+	}()
 	contents, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return nil, err
