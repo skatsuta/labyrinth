@@ -48,6 +48,7 @@ func init() {
 	RootCmd.AddCommand(icarusCmd)
 }
 
+// RunIcarus runs the solver as many times as the user desires.
 func RunIcarus() {
 	// Run the solver as many times as the user desires.
 	fmt.Println("Solving", viper.GetInt("times"), "times")
@@ -70,7 +71,7 @@ func awake() mazelib.Survey {
 	return r.Survey
 }
 
-// Make a call to the laybrinth server (daedalus)
+// Move makes a call to the laybrinth server (daedalus)
 // to move Icarus a given direction
 // Will be used heavily by solveMaze
 func Move(direction string) (mazelib.Survey, error) {
@@ -82,13 +83,12 @@ func Move(direction string) (mazelib.Survey, error) {
 		}
 
 		rep := ToReply(contents)
-		if rep.Victory == true {
+		if rep.Victory {
 			fmt.Println(rep.Message)
 			// os.Exit(1)
 			return rep.Survey, mazelib.ErrVictory
-		} else {
-			return rep.Survey, errors.New(rep.Message)
 		}
+		return rep.Survey, errors.New(rep.Message)
 	}
 
 	return mazelib.Survey{}, errors.New("invalid direction")
@@ -110,7 +110,7 @@ func makeRequest(url string) ([]byte, error) {
 	return contents, nil
 }
 
-// Handling a JSON response and unmarshalling it into a reply struct
+// ToReply handles a JSON response and unmarshalling it into a reply struct
 func ToReply(in []byte) mazelib.Reply {
 	res := &mazelib.Reply{}
 	json.Unmarshal(in, &res)
