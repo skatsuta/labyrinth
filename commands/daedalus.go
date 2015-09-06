@@ -411,10 +411,13 @@ func sidewinder(xSize, ySize int) *Maze {
 		}
 	}
 
-	if e := z.SetStartPoint(0, 0); e != nil {
+	w, h := z.Width(), z.Height()
+	sx, sy := r.Intn(w-1), r.Intn(h-1)
+	if e := z.SetStartPoint(sx, sy); e != nil {
 		return emptyMaze(xSize, ySize)
 	}
-	if e := z.SetTreasure(z.Width()-1, z.Height()-1); e != nil {
+	tx, ty := r.Intn(w-1), r.Intn(h-1)
+	if e := z.SetTreasure(tx, ty); e != nil {
 		return emptyMaze(xSize, ySize)
 	}
 
