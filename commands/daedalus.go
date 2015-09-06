@@ -368,13 +368,6 @@ func sidewinder(xSize, ySize int) *Maze {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	z := fullMaze(xSize, ySize)
 
-	if e := z.SetStartPoint(0, 0); e != nil {
-		return emptyMaze(xSize, ySize)
-	}
-	if e := z.SetTreasure(z.Width()-1, z.Height()-1); e != nil {
-		return emptyMaze(xSize, ySize)
-	}
-
 	for y := range z.rooms {
 		run := make([]*mazelib.Room, len(z.rooms[y]))
 
@@ -416,6 +409,13 @@ func sidewinder(xSize, ySize int) *Maze {
 				}
 			}
 		}
+	}
+
+	if e := z.SetStartPoint(0, 0); e != nil {
+		return emptyMaze(xSize, ySize)
+	}
+	if e := z.SetTreasure(z.Width()-1, z.Height()-1); e != nil {
+		return emptyMaze(xSize, ySize)
 	}
 
 	return z
