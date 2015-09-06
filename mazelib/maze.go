@@ -48,9 +48,12 @@ type Survey struct {
 	Left   bool `json:"left"`
 }
 
+// Direction is a direction.
+type Direction int
+
 const (
 	// N is the north.
-	N = 1
+	N Direction = 1
 	// S is the south.
 	S = 2
 	// E is the east.
@@ -68,10 +71,11 @@ type Room struct {
 	Start    bool
 	Visited  bool
 	Walls    Survey
+	nbr      map[Direction]*Room
 }
 
 // AddWall adds a wall in the `dir` direction.
-func (r *Room) AddWall(dir int) {
+func (r *Room) AddWall(dir Direction) {
 	switch dir {
 	case N:
 		r.Walls.Top = true
@@ -85,7 +89,7 @@ func (r *Room) AddWall(dir int) {
 }
 
 // RmWall removes a wall in the `dir` direction.
-func (r *Room) RmWall(dir int) {
+func (r *Room) RmWall(dir Direction) {
 	switch dir {
 	case N:
 		r.Walls.Top = false
