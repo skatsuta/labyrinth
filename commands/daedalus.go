@@ -362,12 +362,26 @@ func fullMaze(xSize, ySize int) *Maze {
 
 // TODO: Write your maze creator function here
 func createMaze(xSize, ySize int) *Maze {
-	return sidewinder(xSize, ySize)
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+
+	z := sidewinder(xSize, ySize, r)
+
+	// set the starting point and goal randomly
+	w, h := z.Width(), z.Height()
+	sx, sy := r.Intn(w-1), r.Intn(h-1)
+	if e := z.SetStartPoint(sx, sy); e != nil {
+		return emptyMaze(xSize, ySize)
+	}
+	tx, ty := r.Intn(w-1), r.Intn(h-1)
+	if e := z.SetTreasure(tx, ty); e != nil {
+		return emptyMaze(xSize, ySize)
+	}
+
+	return z
 }
 
 // sidewinder creates a maze by using sidewinder algorithm.
-func sidewinder(xSize, ySize int) *Maze {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+func sidewinder(xSize, ySize int, r *rand.Rand) *Maze {
 	z := fullMaze(xSize, ySize)
 
 	for y := range z.rooms {
@@ -411,16 +425,6 @@ func sidewinder(xSize, ySize int) *Maze {
 				}
 			}
 		}
-	}
-
-	w, h := z.Width(), z.Height()
-	sx, sy := r.Intn(w-1), r.Intn(h-1)
-	if e := z.SetStartPoint(sx, sy); e != nil {
-		return emptyMaze(xSize, ySize)
-	}
-	tx, ty := r.Intn(w-1), r.Intn(h-1)
-	if e := z.SetTreasure(tx, ty); e != nil {
-		return emptyMaze(xSize, ySize)
 	}
 
 	return z
