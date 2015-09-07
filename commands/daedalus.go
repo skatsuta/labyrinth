@@ -393,12 +393,10 @@ func createMaze(xSize, ySize int) *Maze {
 
 	// set the starting point and goal randomly
 	w, h := z.Width(), z.Height()
-	sx, sy := r.Intn(w-1), r.Intn(h-1)
-	if e := z.SetStartPoint(sx, sy); e != nil {
+	if e := z.SetStartPoint(r.Intn(w-1), r.Intn(h-1)); e != nil {
 		return emptyMaze(xSize, ySize)
 	}
-	tx, ty := r.Intn(w-1), r.Intn(h-1)
-	if e := z.SetTreasure(tx, ty); e != nil {
+	if e := z.SetTreasure(r.Intn(w-1), r.Intn(h-1)); e != nil {
 		return emptyMaze(xSize, ySize)
 	}
 
