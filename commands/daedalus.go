@@ -358,13 +358,13 @@ func configureRooms(z *Maze) {
 			}
 
 			// init Nbr field
-			room.Nbr = make(map[mazelib.Direction]*mazelib.Room)
+			room.Nbr = make(map[*mazelib.Room]mazelib.Direction)
 
 			// north, east, south, west
 			coords := [][]int{{x, y - 1}, {x + 1, y}, {x, y + 1}, {x - 1, y}}
 			for i, coord := range coords {
 				if nbr, err := z.GetRoom(coord[0], coord[1]); err == nil {
-					room.Nbr[dirs[i]] = nbr
+					room.Nbr[nbr] = dirs[i]
 				}
 			}
 		}
@@ -398,6 +398,42 @@ func createMaze(xSize, ySize int) *Maze {
 	}
 	if e := z.SetTreasure(r.Intn(w-1), r.Intn(h-1)); e != nil {
 		return emptyMaze(xSize, ySize)
+	}
+
+	return z
+}
+
+// recursiveBacktracker creates a maze by using recursive backtracker algorithm.
+func recursiveBacktracker(xSize, ySize int, r *rand.Rand) *Maze {
+	z := fullMaze(xSize, ySize)
+
+	// pick a starting Room randomly
+	w, h := z.Width(), z.Height()
+	start, err := z.GetRoom(r.Intn(w-1), r.Intn(h-1))
+	if err != nil {
+		start, _ = z.GetRoom(0, 0)
+	}
+
+	stack := []*mazelib.Room{start}
+
+	for len(stack) > 0 {
+		current := stack[len(stack)-1]
+
+		var nbs []*mazelib.Room
+		for _, nb := range current.Neighbors() {
+			if len(nb.Links()) == 0 {
+				nbs = append(nbs, nb)
+			}
+		}
+
+		if len(nbs) == 0 {
+			stack = stack[:len(stack)-1]
+			continue
+		}
+
+		nb := nbs[r.Intn(len(nbs))]
+		current.Link(nb)
+		stack = append(stack, nb)
 	}
 
 	return z
