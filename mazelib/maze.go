@@ -72,6 +72,14 @@ type Room struct {
 	links    map[*Room]bool
 }
 
+// NewRoom creates a new Room.
+func NewRoom() Room {
+	return Room{
+		Nbr:   make(map[*Room]Direction),
+		links: make(map[*Room]bool),
+	}
+}
+
 // AddWall adds a wall in the `dir` direction.
 func (r *Room) AddWall(dir Direction) {
 	switch dir {
