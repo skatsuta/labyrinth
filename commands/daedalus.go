@@ -339,9 +339,11 @@ func emptyMaze(xSize, ySize int) *Maze {
 	for y := 0; y < ySize; y++ {
 		z.rooms[y] = make([]mazelib.Room, xSize)
 		for x := 0; x < xSize; x++ {
-			z.rooms[y][x] = mazelib.Room{}
+			z.rooms[y][x] = mazelib.NewRoom()
 		}
 	}
+
+	configureRooms(&z)
 
 	return &z
 }
@@ -389,7 +391,7 @@ func fullMaze(xSize, ySize int) *Maze {
 func createMaze(xSize, ySize int) *Maze {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 
-	z := sidewinder(xSize, ySize, r)
+	z := recursiveBacktracker(xSize, ySize, r)
 
 	// set the starting point and goal randomly
 	w, h := z.Width(), z.Height()
