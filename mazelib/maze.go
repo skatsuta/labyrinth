@@ -106,8 +106,10 @@ func (r *Room) Link(room *Room) {
 }
 
 func (r *Room) link(room *Room, bidi bool) {
+	r.RmWall(r.Nbr[room])
 	r.links[room] = true
 	if bidi {
+		room.RmWall(room.Nbr[r])
 		room.link(r, false)
 	}
 }
