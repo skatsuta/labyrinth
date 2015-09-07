@@ -69,6 +69,7 @@ type Room struct {
 	Visited  bool
 	Walls    Survey
 	Nbr      map[Direction]*Room
+	links    map[*Room]bool
 }
 
 // AddWall adds a wall in the `dir` direction.
@@ -96,6 +97,18 @@ func (r *Room) RmWall(dir Direction) {
 		r.Walls.Right = false
 	case W:
 		r.Walls.Left = false
+	}
+}
+
+// Link links r with room, e.g. removes face-to-face walls.
+func (r *Room) Link(room *Room) {
+	r.link(room, true)
+}
+
+func (r *Room) link(room *Room, bidi bool) {
+	r.links[room] = true
+	if bidi {
+		room.link(r, false)
 	}
 }
 
