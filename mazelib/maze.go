@@ -68,7 +68,7 @@ type Room struct {
 	Start    bool
 	Visited  bool
 	Walls    Survey
-	Nbr      map[Direction]*Room
+	Nbr      map[*Room]Direction
 	links    map[*Room]bool
 }
 
@@ -112,10 +112,19 @@ func (r *Room) link(room *Room, bidi bool) {
 	}
 }
 
+// Links returns all the rooms linked with r.
+func (r *Room) Links() []*Room {
+	l := make([]*Room, 0, len(r.links))
+	for k := range r.links {
+		l = append(l, k)
+	}
+	return l
+}
+
 // Neighbors returns all the neighbors around `r`.
 func (r *Room) Neighbors() []*Room {
 	nbrs := make([]*Room, 0, len(r.Nbr))
-	for _, nbr := range r.Nbr {
+	for nbr := range r.Nbr {
 		nbrs = append(nbrs, nbr)
 	}
 	return nbrs
