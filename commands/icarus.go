@@ -20,7 +20,9 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
+	"time"
 
 	"github.com/skatsuta/labyrinth/mazelib"
 	"github.com/spf13/cobra"
@@ -117,12 +119,38 @@ func ToReply(in []byte) mazelib.Reply {
 	return *res
 }
 
-// TODO: This is where you work your magic
 func solveMaze() {
-	_ = awake() // Need to start with waking up to initialize a new maze
-	// You'll probably want to set this to a named value and start by figuring
-	// out which step to take next
+	var (
+		s    = awake()
+		err  error
+		dirs []string
+	)
 
-	//TODO: Write your solver algorithm here
+	// random mouse
+	for {
+		if !s.Top {
+			dirs = append(dirs, "up")
+		}
+		if !s.Bottom {
+			dirs = append(dirs, "down")
+		}
+		if !s.Right {
+			dirs = append(dirs, "right")
+		}
+		if !s.Left {
+			dirs = append(dirs, "left")
+		}
 
+		if len(dirs) == 0 {
+			// add all directions
+			dirs = []string{"up", "down", "right", "left"}
+		}
+
+		r := rand.New(rand.NewSource(time.Now().UnixNano()))
+		dir := dirs[r.Intn(len(dirs))]
+		s, err = Move(dir)
+		if err == mazelib.ErrVictory {
+			return
+		}
+	}
 }
