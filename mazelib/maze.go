@@ -172,6 +172,8 @@ func AvgScores(in []int) int {
 
 // PrintMaze : Function to Print Maze to Console
 func PrintMaze(m MazeI) {
+	ix, iy := m.Icarus()
+
 	fmt.Println("_" + strings.Repeat("___", m.Width()))
 	for y := 0; y < m.Height(); y++ {
 		str := ""
@@ -194,6 +196,8 @@ func PrintMaze(m MazeI) {
 					str += "⏅_"
 				} else if r.Start {
 					str += "⏂_"
+				} else if ix == x && iy == y {
+					str += "⏈ "
 				} else {
 					str += "__"
 				}
@@ -202,6 +206,8 @@ func PrintMaze(m MazeI) {
 					str += "⏃ "
 				} else if r.Start {
 					str += "⏀ "
+				} else if ix == x && iy == y {
+					str += "⏆ "
 				} else {
 					str += "  "
 				}
