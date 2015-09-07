@@ -160,6 +160,8 @@ func MoveDirection(c *gin.Context) {
 	r.Survey = s
 
 	c.JSON(http.StatusOK, r)
+
+	mazelib.PrintMaze(currentMaze)
 }
 
 func initializeMaze(x, y int) {
