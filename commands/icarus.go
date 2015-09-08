@@ -121,36 +121,65 @@ func ToReply(in []byte) mazelib.Reply {
 
 func solveMaze() {
 	var (
-		s    = awake()
-		err  error
-		dirs []string
+		dirs  []string
+		s     = awake()
+		stack = []*mazelib.Survey{&s}
+		r     = rand.New(rand.NewSource(time.Now().UnixNano()))
 	)
 
 	// random mouse
-	for {
-		if !s.Top {
+	for len(stack) > 0 {
+		current := stack[len(stack)-1]
+
+		fmt.Printf("[DEBUG] current: %+v\n", current)
+
+		// init
+		dirs = dirs[:0]
+		if !current.Top {
 			dirs = append(dirs, "up")
 		}
-		if !s.Bottom {
+		if !current.Bottom {
 			dirs = append(dirs, "down")
 		}
-		if !s.Right {
+		if !current.Right {
 			dirs = append(dirs, "right")
 		}
-		if !s.Left {
+		if !current.Left {
 			dirs = append(dirs, "left")
 		}
 
 		if len(dirs) == 0 {
-			// add all directions
-			dirs = []string{"up", "down", "right", "left"}
-		}
-
-		r := rand.New(rand.NewSource(time.Now().UnixNano()))
-		dir := dirs[r.Intn(len(dirs))]
-		s, err = Move(dir)
-		if err == mazelib.ErrVictory {
+			fmt.Println("[ERROR] No direction to move on! Giving up...")
 			return
 		}
+
+		// sampling
+		dir := dirs[r.Intn(len(dirs))]
+		sv, err := Move(dir)
+		if err == mazelib.ErrVictory {
+			fmt.Println("[INFO] Yay! Treasure discovered!")
+			return
+		}
+
+		if len(dirs) == 1 && len(stack) > 1 {
+			// pop
+			stack = stack[:len(stack)-1]
+			continue
+		}
+
+		switch dir {
+		case "up":
+			current.Top = true
+		case "down":
+			current.Bottom = true
+		case "right":
+			current.Right = true
+		case "left":
+			current.Left = true
+		}
+		// push
+		stack = append(stack, &sv)
 	}
+
+	fmt.Println("[WARN] Stack is now empty... Maybe something wrong?")
 }
