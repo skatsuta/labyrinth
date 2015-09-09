@@ -422,7 +422,7 @@ func recursiveBacktracker(xSize, ySize int, r *rand.Rand) *Maze {
 
 	// pick a starting Room randomly
 	w, h := z.Width(), z.Height()
-	start, err := z.GetRoom(r.Intn(w-1), r.Intn(h-1))
+	start, err := z.GetRoom(r.Intn(w), r.Intn(h))
 	if err != nil {
 		start, _ = z.GetRoom(0, 0)
 	}
