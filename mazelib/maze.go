@@ -48,15 +48,17 @@ type Survey struct {
 	Left   bool `json:"left"`
 }
 
+//go:generate stringer -type=Direction
+
 // Direction is a direction.
 type Direction int
 
 // N, S, E, W are directions to north, south, east and west.
 const (
-	N Direction = 1
-	S           = 2
-	E           = 3
-	W           = 4
+	N Direction = 1 + iota
+	S
+	E
+	W
 )
 
 // ErrVictory is an error representing the victory of Icarus.
