@@ -144,7 +144,7 @@ func solveMaze() {
 			dirs[mazelib.E] = "right"
 		}
 		if !current.survey.Left {
-			dirs[mazelib.S] = "left"
+			dirs[mazelib.W] = "left"
 		}
 		fmt.Printf("[DEBUG] direction candidates are %v\n", dirs)
 
