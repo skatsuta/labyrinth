@@ -67,8 +67,8 @@ type Direction int
 // N, S, E, W are directions to north, south, east and west.
 const (
 	N Direction = 1 + iota
-	S
 	E
+	S
 	W
 )
 
@@ -85,6 +85,22 @@ func (d Direction) String() string {
 		return "left"
 	default:
 		return ""
+	}
+}
+
+// Opposite returns the oppsite direction of d.
+func (d Direction) Opposite() Direction {
+	switch d {
+	case N:
+		return S
+	case E:
+		return W
+	case S:
+		return N
+	case W:
+		return E
+	default:
+		return 0
 	}
 }
 
