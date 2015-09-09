@@ -20,9 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"math/rand"
 	"net/http"
-	"time"
 
 	"github.com/skatsuta/labyrinth/mazelib"
 	"github.com/spf13/cobra"
@@ -121,31 +119,43 @@ func ToReply(in []byte) mazelib.Reply {
 
 func solveMaze() {
 	var (
-		dirs  []string
+		sv    mazelib.Survey
+		err   error
+		dir   string
 		s     = awake()
-		stack = []*mazelib.Survey{&s}
-		r     = rand.New(rand.NewSource(time.Now().UnixNano()))
+		stack = []record{{survey: s, dirm: make(map[mazelib.Direction]bool)}}
+		//r     = rand.New(rand.NewSource(time.Now().UnixNano()))
 	)
 
-	// random mouse
 	for len(stack) > 0 {
 		current := stack[len(stack)-1]
 
 		fmt.Printf("[DEBUG] current: %+v\n", current)
 
 		// init
-		dirs = dirs[:0]
-		if !current.Top {
-			dirs = append(dirs, "up")
+		dirs := make(map[mazelib.Direction]string)
+		if !current.survey.Top {
+			dirs[mazelib.N] = "up"
 		}
-		if !current.Bottom {
-			dirs = append(dirs, "down")
+		if !current.survey.Bottom {
+			dirs[mazelib.S] = "down"
 		}
-		if !current.Right {
-			dirs = append(dirs, "right")
+		if !current.survey.Right {
+			dirs[mazelib.E] = "right"
 		}
-		if !current.Left {
-			dirs = append(dirs, "left")
+		if !current.survey.Left {
+			dirs[mazelib.S] = "left"
+		}
+		fmt.Printf("[DEBUG] direction candidates are %v\n", dirs)
+
+		// delete the directions Icarus has already moved to unless it's a dead end
+		if !IsDeadEnd(current.survey) {
+			for k := range current.dirm {
+				if current.dirm[k] {
+					fmt.Printf("[DEBUG] direction %v has been already visited. deleting...\n", k)
+					delete(dirs, k)
+				}
+			}
 		}
 
 		if len(dirs) == 0 {
@@ -154,32 +164,59 @@ func solveMaze() {
 		}
 
 		// sampling
-		dir := dirs[r.Intn(len(dirs))]
-		sv, err := Move(dir)
+		for _, dir = range dirs {
+			sv, err = Move(dir)
+			break
+		}
 		if err == mazelib.ErrVictory {
 			fmt.Println("[INFO] Yay! Treasure discovered!")
 			return
 		}
 
-		if len(dirs) == 1 && len(stack) > 1 {
-			// pop
+		if IsDeadEnd(current.survey) && len(stack) >= 2 {
+			// pop from stack
 			stack = stack[:len(stack)-1]
+			fmt.Printf("[DEBUG] Popping from the stack: len = %d\n", len(stack))
 			continue
 		}
 
+		// init
+		dirm := make(map[mazelib.Direction]bool)
 		switch dir {
 		case "up":
-			current.Top = true
+			current.dirm[mazelib.N] = true
+			dirm[mazelib.S] = true
 		case "down":
-			current.Bottom = true
+			current.dirm[mazelib.S] = true
+			dirm[mazelib.N] = true
 		case "right":
-			current.Right = true
+			current.dirm[mazelib.E] = true
+			dirm[mazelib.W] = true
 		case "left":
-			current.Left = true
+			current.dirm[mazelib.W] = true
+			dirm[mazelib.E] = true
 		}
-		// push
-		stack = append(stack, &sv)
+		// push to stack
+		next := record{survey: sv, dirm: dirm}
+		stack = append(stack, next)
 	}
 
 	fmt.Println("[WARN] Stack is now empty... Maybe something wrong?")
+}
+
+// IsDeadEnd reports whether the current room is a dead end.
+func IsDeadEnd(s mazelib.Survey) bool {
+	cnt := 0
+	for _, b := range []bool{s.Top, s.Bottom, s.Right, s.Left} {
+		if b {
+			cnt++
+		}
+	}
+	return cnt >= 3
+}
+
+// record is a record of directions Icarus moved to.
+type record struct {
+	survey mazelib.Survey
+	dirm   map[mazelib.Direction]bool
 }
