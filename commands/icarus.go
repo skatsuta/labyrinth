@@ -159,7 +159,7 @@ func solveMaze() {
 		}
 
 		if len(dirs) == 0 {
-			fmt.Println("[ERROR] No direction to move on! Giving up...")
+			fmt.Println("[ERROR] no direction to move on! Giving up...")
 			return
 		}
 
@@ -176,7 +176,7 @@ func solveMaze() {
 		if IsDeadEnd(current.survey) && len(stack) >= 2 {
 			// pop from stack
 			stack = stack[:len(stack)-1]
-			fmt.Printf("[DEBUG] Popping from the stack: len = %d\n", len(stack))
+			fmt.Printf("[DEBUG] popping from the stack: len = %d\n", len(stack))
 			continue
 		}
 
@@ -201,7 +201,7 @@ func solveMaze() {
 		stack = append(stack, next)
 	}
 
-	fmt.Println("[WARN] Stack is now empty... Maybe something wrong?")
+	fmt.Println("[WARN] stack is now empty... maybe something wrong?")
 }
 
 // IsDeadEnd reports whether the current room is a dead end.
