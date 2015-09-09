@@ -120,52 +120,69 @@ func ToReply(in []byte) mazelib.Reply {
 func solveMaze() {
 	var (
 		sv    mazelib.Survey
+		dir   mazelib.Direction
 		err   error
-		dir   string
 		s     = awake()
-		stack = []record{{survey: s, dirm: make(map[mazelib.Direction]bool)}}
+		stack = stack{{survey: s}}
 		//r     = rand.New(rand.NewSource(time.Now().UnixNano()))
+		popped bool
+		count  int
 	)
 
 	for len(stack) > 0 {
-		current := stack[len(stack)-1]
+		count++
+		fmt.Printf("[DEBUG] count: %d\n", count)
 
+		popped = false
+		current := stack[len(stack)-1]
 		fmt.Printf("[DEBUG] current: %+v\n", current)
 
 		// init
-		dirs := make(map[mazelib.Direction]string)
+		cand := make(map[mazelib.Direction]bool)
 		if !current.survey.Top {
-			dirs[mazelib.N] = "up"
+			cand[mazelib.N] = true
 		}
 		if !current.survey.Bottom {
-			dirs[mazelib.S] = "down"
+			cand[mazelib.S] = true
 		}
 		if !current.survey.Right {
-			dirs[mazelib.E] = "right"
+			cand[mazelib.E] = true
 		}
 		if !current.survey.Left {
-			dirs[mazelib.W] = "left"
+			cand[mazelib.W] = true
 		}
-		fmt.Printf("[DEBUG] direction candidates are %v\n", dirs)
+		fmt.Printf("[DEBUG] direction candidates are %v\n", cand)
 
 		// delete the directions Icarus has already moved to unless it's a dead end
-		if !IsDeadEnd(current.survey) {
-			for k := range current.dirm {
-				if current.dirm[k] {
-					fmt.Printf("[DEBUG] direction %v has been already visited. deleting...\n", k)
-					delete(dirs, k)
-				}
+		for _, d := range current.dirs {
+			if cand[d] {
+				fmt.Printf("[DEBUG] direction %s has been already moved. deleting...\n", d.String())
+				delete(cand, d)
 			}
 		}
 
-		if len(dirs) == 0 {
-			fmt.Println("[ERROR] no direction to move on! Giving up...")
-			return
+		if len(cand) == 0 {
+			switch len(current.dirs) {
+			case 0:
+				fmt.Println("[WARN] no direction to move on! giving up...")
+				return
+			case 1: // dead end
+				cand[current.dirs[0]] = true
+			default:
+				// reregister directions except last one
+				for _, d := range current.dirs[:len(current.dirs)-1] {
+					cand[d] = true
+				}
+			}
+
+			stack.pop()
+			fmt.Printf("[DEBUG] popping from the stack: len = %d\n", len(stack))
+			popped = true
 		}
 
 		// sampling
-		for _, dir = range dirs {
-			sv, err = Move(dir)
+		for dir = range cand {
+			sv, err = Move(dir.String())
 			break
 		}
 		if err == mazelib.ErrVictory {
@@ -173,50 +190,67 @@ func solveMaze() {
 			return
 		}
 
-		if IsDeadEnd(current.survey) && len(stack) >= 2 {
-			// pop from stack
-			stack = stack[:len(stack)-1]
-			fmt.Printf("[DEBUG] popping from the stack: len = %d\n", len(stack))
+		if popped {
 			continue
 		}
 
-		// init
-		dirm := make(map[mazelib.Direction]bool)
-		switch dir {
-		case "up":
-			current.dirm[mazelib.N] = true
-			dirm[mazelib.S] = true
-		case "down":
-			current.dirm[mazelib.S] = true
-			dirm[mazelib.N] = true
-		case "right":
-			current.dirm[mazelib.E] = true
-			dirm[mazelib.W] = true
-		case "left":
-			current.dirm[mazelib.W] = true
-			dirm[mazelib.E] = true
-		}
+		dirs := []mazelib.Direction{dir}
 		// push to stack
-		next := record{survey: sv, dirm: dirm}
+		next := record{survey: sv, dirs: dirs}
 		stack = append(stack, next)
 	}
 
 	fmt.Println("[WARN] stack is now empty... maybe something wrong?")
 }
 
-// IsDeadEnd reports whether the current room is a dead end.
-func IsDeadEnd(s mazelib.Survey) bool {
-	cnt := 0
-	for _, b := range []bool{s.Top, s.Bottom, s.Right, s.Left} {
-		if b {
-			cnt++
-		}
+func recPrevDir(m map[mazelib.Direction]bool, dir string) {
+	switch dir {
+	case "up":
+		m[mazelib.S] = true
+	case "down":
+		m[mazelib.N] = true
+	case "right":
+		m[mazelib.W] = true
+	case "left":
+		m[mazelib.E] = true
 	}
-	return cnt >= 3
 }
 
 // record is a record of directions Icarus moved to.
 type record struct {
 	survey mazelib.Survey
-	dirm   map[mazelib.Direction]bool
+	dirs   []mazelib.Direction
+}
+
+type stack []record
+
+func (s stack) isEmpty() bool {
+	return len(s) == 0
+}
+
+func (s stack) push(r record) {
+	s = append(s, r)
+}
+
+func (s stack) pop() record {
+	if len(s) == 0 {
+		return record{}
+	}
+	r := s[len(s)-1]
+	s = s[:len(s)-1]
+	return r
+}
+
+func (s stack) last() record {
+	if len(s) == 0 {
+		return record{}
+	}
+	return s[len(s)-1]
+}
+
+func (s stack) secondLast() (record, error) {
+	if len(s) < 2 {
+		return record{}, errors.New("secordLast: the length of stack is less than 2")
+	}
+	return s[len(s)-2], nil
 }
