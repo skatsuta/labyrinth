@@ -48,6 +48,17 @@ type Survey struct {
 	Left   bool `json:"left"`
 }
 
+// IsDeadEnd reports whether the room is a dead end.
+func (s Survey) IsDeadEnd() bool {
+	cnt := 0
+	for _, b := range []bool{s.Top, s.Bottom, s.Right, s.Left} {
+		if b {
+			cnt++
+		}
+	}
+	return cnt >= 3
+}
+
 //go:generate stringer -type=Direction
 
 // Direction is a direction.
