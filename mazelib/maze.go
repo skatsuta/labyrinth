@@ -61,6 +61,22 @@ const (
 	W
 )
 
+// String returns a string repersentation of Direction.
+func (d Direction) String() string {
+	switch d {
+	case N:
+		return "up"
+	case S:
+		return "down"
+	case E:
+		return "right"
+	case W:
+		return "left"
+	default:
+		return ""
+	}
+}
+
 // ErrVictory is an error representing the victory of Icarus.
 var ErrVictory = errors.New("Victory")
 
