@@ -123,18 +123,21 @@ func solveMaze() {
 		dir   mazelib.Direction
 		err   error
 		s     = awake()
-		stack = stack{{survey: s}}
+		stack = newStack(record{survey: s})
 		//r     = rand.New(rand.NewSource(time.Now().UnixNano()))
 		popped bool
 		count  int
 	)
 
-	for len(stack) > 0 {
+	for stack.size() > 0 {
+		input := ""
+		fmt.Scanln(&input)
+
 		count++
 		fmt.Printf("[DEBUG] count: %d\n", count)
 
 		popped = false
-		current := stack[len(stack)-1]
+		current := stack.last()
 		fmt.Printf("[DEBUG] current: %+v\n", current)
 
 		// init
@@ -176,7 +179,7 @@ func solveMaze() {
 			}
 
 			stack.pop()
-			fmt.Printf("[DEBUG] popping from the stack: len = %d\n", len(stack))
+			fmt.Printf("[DEBUG] popping from the stack: size = %d\n", stack.size())
 			popped = true
 		}
 
@@ -194,10 +197,13 @@ func solveMaze() {
 			continue
 		}
 
-		dirs := []mazelib.Direction{dir}
+		// record the direction Icarus moved to
+		current.dirs = append(current.dirs, dir)
+
+		dirs := []mazelib.Direction{dir.Opposite()}
 		// push to stack
 		next := record{survey: sv, dirs: dirs}
-		stack = append(stack, next)
+		stack.push(next)
 	}
 
 	fmt.Println("[WARN] stack is now empty... maybe something wrong?")
@@ -222,35 +228,49 @@ type record struct {
 	dirs   []mazelib.Direction
 }
 
-type stack []record
-
-func (s stack) isEmpty() bool {
-	return len(s) == 0
+// stack is a stack of records.
+type stack struct {
+	stk []record
 }
 
-func (s stack) push(r record) {
-	s = append(s, r)
+// newStack returns a new empty stack.
+func newStack(rec ...record) *stack {
+	return &stack{
+		stk: rec,
+	}
 }
 
-func (s stack) pop() record {
-	if len(s) == 0 {
+func (s *stack) isEmpty() bool {
+	return len(s.stk) == 0
+}
+
+func (s *stack) size() int {
+	return len(s.stk)
+}
+
+func (s *stack) push(r record) {
+	s.stk = append(s.stk, r)
+}
+
+func (s *stack) pop() record {
+	if len(s.stk) == 0 {
 		return record{}
 	}
-	r := s[len(s)-1]
-	s = s[:len(s)-1]
+	r := s.stk[len(s.stk)-1]
+	s.stk = s.stk[:len(s.stk)-1]
 	return r
 }
 
-func (s stack) last() record {
-	if len(s) == 0 {
-		return record{}
+func (s *stack) last() *record {
+	if len(s.stk) == 0 {
+		return nil
 	}
-	return s[len(s)-1]
+	return &s.stk[len(s.stk)-1]
 }
 
-func (s stack) secondLast() (record, error) {
-	if len(s) < 2 {
+func (s *stack) secondLast() (record, error) {
+	if len(s.stk) < 2 {
 		return record{}, errors.New("secordLast: the length of stack is less than 2")
 	}
-	return s[len(s)-2], nil
+	return s.stk[len(s.stk)-2], nil
 }
