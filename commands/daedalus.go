@@ -450,11 +450,12 @@ func fullMaze(xSize, ySize int) *Maze {
 	return z
 }
 
-// TODO: Write your maze creator function here
 func createMaze(xSize, ySize int) *Maze {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	z := recursiveBacktracker(xSize, ySize, r)
+
+	z.Braid(viper.GetFloat64("braid"))
 
 	// set the starting point and goal randomly
 	w, h := z.Width(), z.Height()
