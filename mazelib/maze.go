@@ -177,6 +177,12 @@ func (r *Room) Links() []*Room {
 	return l
 }
 
+// IsLinked reports whether r is linked with room.
+func (r *Room) IsLinked(room *Room) bool {
+	_, found := r.links[room]
+	return found
+}
+
 // Neighbors returns all the neighbors around `r`.
 func (r *Room) Neighbors() []*Room {
 	nbrs := make([]*Room, 0, len(r.Nbr))
