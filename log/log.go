@@ -20,13 +20,9 @@ var (
 	out   = os.Stdout
 )
 
-func init() {
-	debug = viper.GetBool("debug")
-}
-
 // Debugf formats according to a format specifier with PrefixDebug string.
 func Debugf(format string, a ...interface{}) {
-	if !debug {
+	if !viper.GetBool("debug") {
 		return
 	}
 

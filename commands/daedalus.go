@@ -70,8 +70,6 @@ func init() {
 	gin.SetMode(gin.ReleaseMode)
 
 	RootCmd.AddCommand(daedalusCmd)
-
-	debug = viper.GetBool("debug")
 }
 
 // RunServer runs the web server.
@@ -165,7 +163,7 @@ func MoveDirection(c *gin.Context) {
 
 	c.JSON(http.StatusOK, r)
 
-	if debug {
+	if viper.GetBool("debug") {
 		mazelib.PrintMaze(currentMaze)
 	}
 }
