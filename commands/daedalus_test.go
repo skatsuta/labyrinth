@@ -48,3 +48,25 @@ func TestAllRooms(t *testing.T) {
 		}
 	}
 }
+
+func TestDeadEnds(t *testing.T) {
+	m := emptyMaze(2, 2)
+	m.rooms[0][0].Link(&m.rooms[0][1])
+
+	tests := []struct {
+		name string
+		m    *Maze
+		want int
+	}{
+		{"2 by 2 empty maze", emptyMaze(2, 2), 0},
+		{"2 by 2 full maze", fullMaze(2, 2), 0}, // isolated room is not a dead end
+		{"2 by 2 maze where (0, 0) is linked to (0, 1)", m, 2},
+	}
+
+	for _, tt := range tests {
+		got := len(tt.m.DeadEnds())
+		if got != tt.want {
+			t.Errorf("%s: got %d; want %d", tt.name, got, tt.want)
+		}
+	}
+}

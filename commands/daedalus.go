@@ -350,6 +350,19 @@ func (m *Maze) AllRooms() []*mazelib.Room {
 	return rooms
 }
 
+// DeadEnds returns all the dead-end Rooms in the Maze.
+func (m *Maze) DeadEnds() []*mazelib.Room {
+	var list []*mazelib.Room
+
+	for _, room := range m.AllRooms() {
+		if len(room.Links()) == 1 {
+			list = append(list, room)
+		}
+	}
+
+	return list
+}
+
 // Creates a maze without any walls
 // Good starting point for additive algorithms
 func emptyMaze(xSize, ySize int) *Maze {
