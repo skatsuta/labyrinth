@@ -125,13 +125,17 @@ func solveMaze() {
 		s     = awake()
 		stack = newStack(record{survey: s})
 		//r     = rand.New(rand.NewSource(time.Now().UnixNano()))
-		popped bool
-		count  int
+		popped      bool
+		count       int
+		interactive = viper.GetBool("interactive")
 	)
 
 	for stack.size() > 0 {
-		input := ""
-		fmt.Scanln(&input)
+		if interactive {
+			input := ""
+			fmt.Print("Press Enter to move forward...")
+			fmt.Scanln(&input)
+		}
 
 		count++
 		fmt.Printf("[DEBUG] count: %d\n", count)
