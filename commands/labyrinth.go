@@ -75,6 +75,7 @@ func init() {
 	RootCmd.PersistentFlags().IntP("max-steps", "m", 500, "Maximum steps before giving up")
 	RootCmd.PersistentFlags().BoolP("interactive", "i", false, "runs in interactive mode")
 	RootCmd.PersistentFlags().BoolP("debug", "d", false, "prints debug messages")
+	RootCmd.PersistentFlags().Float64P("braid", "b", 1.0, "probability to rearrange an dead end to a braid")
 
 	// Bind viper to these flags so viper can read flag values along with config, env, etc.
 	_ = viper.BindPFlag("width", RootCmd.PersistentFlags().Lookup("width"))
@@ -84,6 +85,7 @@ func init() {
 	_ = viper.BindPFlag("max-steps", RootCmd.PersistentFlags().Lookup("max-steps"))
 	_ = viper.BindPFlag("interactive", RootCmd.PersistentFlags().Lookup("interactive"))
 	_ = viper.BindPFlag("debug", RootCmd.PersistentFlags().Lookup("debug"))
+	_ = viper.BindPFlag("braid", RootCmd.PersistentFlags().Lookup("braid"))
 }
 
 // Read in config file and ENV variables if set.
