@@ -6,6 +6,27 @@ import (
 	"testing"
 )
 
+func TestIsLinked(t *testing.T) {
+	r := []Room{NewRoom(), NewRoom(), NewRoom()}
+	r[0].Link(&r[1])
+
+	tests := []struct {
+		i1, i2 int
+		want   bool
+	}{
+		{0, 1, true},
+		{0, 2, false},
+		{1, 2, false},
+	}
+
+	for _, tt := range tests {
+		got := r[tt.i1].IsLinked(&r[tt.i2])
+		if got != tt.want {
+			t.Errorf("%d linked with %d?: got %t, but want %t", tt.i1, tt.i2, got, tt.want)
+		}
+	}
+}
+
 func TestShuffle(t *testing.T) {
 	// seed by which rand.Perm() returns indices of reverse order
 	rand.Seed(20)
