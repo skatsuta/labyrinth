@@ -173,13 +173,8 @@ func solveMaze() {
 			case 0:
 				fmt.Println("[WARN] no direction to move on! giving up...")
 				return
-			case 1: // dead end
+			default: // move to the oldest direction
 				cand[current.dirs[0]] = true
-			default:
-				// reregister directions except last one
-				for _, d := range current.dirs[:len(current.dirs)-1] {
-					cand[d] = true
-				}
 			}
 
 			stack.pop()
