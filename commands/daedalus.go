@@ -363,6 +363,36 @@ func (m *Maze) DeadEnds() []*mazelib.Room {
 	return list
 }
 
+// Braid rearranges the Maze to "braid" one, that is, a maze without dead ends.
+// p is the probability for the occurrence of braids. If p <= 0.0, it does nothing.
+func (m *Maze) Braid(p float64) {
+	for _, room := range mazelib.Shuffle(m.AllRooms()) {
+		if len(room.Links()) != 1 || rand.Float64() > p {
+			continue
+		}
+
+		var nbs, best []*mazelib.Room
+
+		for _, nb := range room.Neighbors() {
+			if !nb.IsLinked(room) {
+				nbs = append(nbs, nb)
+			}
+		}
+
+		for _, nb := range nbs {
+			if len(nb.Links()) == 1 {
+				best = append(best, nb)
+			}
+		}
+
+		if len(best) == 0 {
+			best = nbs
+		}
+
+		room.Link(mazelib.Random(best))
+	}
+}
+
 // Creates a maze without any walls
 // Good starting point for additive algorithms
 func emptyMaze(xSize, ySize int) *Maze {

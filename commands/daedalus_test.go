@@ -12,6 +12,34 @@ func TestPrintMaze(t *testing.T) {
 	mazelib.PrintMaze(z)
 }
 
+func createUshapedMaze() *Maze {
+	m := fullMaze(2, 2)
+	m.rooms[0][0].Link(&m.rooms[0][1])
+	m.rooms[0][1].Link(&m.rooms[1][1])
+	m.rooms[1][1].Link(&m.rooms[1][0])
+	return m
+}
+
+func TestBraid(t *testing.T) {
+	tests := []struct {
+		m    *Maze
+		p    float64
+		want int
+	}{
+		{createUshapedMaze(), -0.5, 2},
+		{createUshapedMaze(), 0.0, 2},
+		{createUshapedMaze(), 1.0, 0},
+	}
+
+	for _, tt := range tests {
+		tt.m.Braid(tt.p)
+		got := len(tt.m.DeadEnds())
+		if got != tt.want {
+			t.Errorf("# of dead ends by p = %.1f should be %d, but got %d", tt.p, tt.want, got)
+		}
+	}
+}
+
 func TestConfigureRooms(t *testing.T) {
 	w, h := 2, 2
 	z := emptyMaze(w, h)
