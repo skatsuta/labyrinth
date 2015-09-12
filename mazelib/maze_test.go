@@ -50,3 +50,26 @@ func TestShuffle(t *testing.T) {
 		}
 	}
 }
+
+func TestRandom(t *testing.T) {
+	rand.Seed(3)
+
+	rooms := []*Room{&Room{}, &Room{}, &Room{}}
+	tests := []struct {
+		rooms []*Room
+		want  *Room
+	}{
+		{nil, nil},
+		{[]*Room{}, nil},
+		{rooms[:1], rooms[0]},
+		{rooms, rooms[2]},
+	}
+
+	for _, tt := range tests {
+		got := Random(tt.rooms)
+		// compare with respect to pointer address
+		if got != tt.want {
+			t.Errorf("%v: got %p but want %p", tt.rooms, got, tt.want)
+		}
+	}
+}

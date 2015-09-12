@@ -286,3 +286,14 @@ func Shuffle(rooms []*Room) []*Room {
 	}
 	return shfl
 }
+
+// Random returns an element of rooms randomly.
+// If the length of rooms is zero, it returns nil.
+func Random(rooms []*Room) *Room {
+	if len(rooms) == 0 {
+		return nil
+	}
+
+	idx := rand.Intn(len(rooms))
+	return rooms[idx]
+}
