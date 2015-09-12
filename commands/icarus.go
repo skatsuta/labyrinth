@@ -22,6 +22,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/skatsuta/labyrinth/log"
 	"github.com/skatsuta/labyrinth/mazelib"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -132,17 +133,17 @@ func solveMaze() {
 
 	for stack.size() > 0 {
 		if interactive {
-			input := ""
+			var input string
 			fmt.Print("Press Enter to move forward...")
 			fmt.Scanln(&input)
 		}
 
 		count++
-		fmt.Printf("[DEBUG] count: %d\n", count)
+		log.Debugf("count: %d\n", count)
 
 		popped = false
 		current := stack.last()
-		fmt.Printf("[DEBUG] current: %+v\n", current)
+		log.Debugf("current: %+v\n", current)
 
 		// init
 		cand := make(map[mazelib.Direction]bool)
@@ -158,12 +159,12 @@ func solveMaze() {
 		if !current.survey.Left {
 			cand[mazelib.W] = true
 		}
-		fmt.Printf("[DEBUG] direction candidates are %v\n", cand)
+		log.Debugf("direction candidates are %v\n", cand)
 
 		// delete the directions Icarus has already moved to unless it's a dead end
 		for _, d := range current.dirs {
 			if cand[d] {
-				fmt.Printf("[DEBUG] direction %s has been already moved. deleting...\n", d.String())
+				log.Debugf("direction %s has been already moved. deleting...\n", d.String())
 				delete(cand, d)
 			}
 		}
@@ -171,14 +172,14 @@ func solveMaze() {
 		if len(cand) == 0 {
 			switch len(current.dirs) {
 			case 0:
-				fmt.Println("[WARN] no direction to move on! giving up...")
+				log.Warnf("no direction to move on! giving up...\n")
 				return
 			default: // move to the oldest direction
 				cand[current.dirs[0]] = true
 			}
 
 			stack.pop()
-			fmt.Printf("[DEBUG] popping from the stack: size = %d\n", stack.size())
+			log.Debugf("popping from the stack: size = %d\n", stack.size())
 			popped = true
 		}
 
@@ -187,8 +188,13 @@ func solveMaze() {
 			sv, err = Move(dir.String())
 			break
 		}
+		log.Debugf("next: %+v\n", sv)
 		if err == mazelib.ErrVictory {
-			fmt.Println("[INFO] Yay! Treasure discovered!")
+			log.Infof("Yay! Treasure discovered!\n")
+			return
+		}
+		if err.Error() != "" {
+			log.Debugf("error: %#v\n", err)
 			return
 		}
 
@@ -205,7 +211,7 @@ func solveMaze() {
 		stack.push(next)
 	}
 
-	fmt.Println("[WARN] stack is now empty... maybe something wrong?")
+	log.Warnf("stack is now empty... maybe something wrong?\n")
 }
 
 func recPrevDir(m map[mazelib.Direction]bool, dir string) {

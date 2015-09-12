@@ -25,6 +25,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/skatsuta/labyrinth/log"
 	"github.com/skatsuta/labyrinth/mazelib"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -47,6 +48,7 @@ type Maze struct {
 // concurrent connections than these simple package variables
 var currentMaze *Maze
 var scores []int
+var debug bool
 
 // Defining the daedalus command.
 // This will be called as 'laybrinth daedalus'
@@ -68,6 +70,8 @@ func init() {
 	gin.SetMode(gin.ReleaseMode)
 
 	RootCmd.AddCommand(daedalusCmd)
+
+	debug = viper.GetBool("debug")
 }
 
 // RunServer runs the web server.
@@ -161,7 +165,9 @@ func MoveDirection(c *gin.Context) {
 
 	c.JSON(http.StatusOK, r)
 
-	mazelib.PrintMaze(currentMaze)
+	if debug {
+		mazelib.PrintMaze(currentMaze)
+	}
 }
 
 func initializeMaze(x, y int) {
@@ -399,7 +405,7 @@ func createMaze(xSize, ySize int) *Maze {
 	w, h := z.Width(), z.Height()
 	sx, sy := r.Intn(w), r.Intn(h)
 	if e := z.SetStartPoint(sx, sy); e != nil {
-		fmt.Printf("[ERROR] error setting start point: %v\n", e)
+		log.Errorf("error setting start point: %v\n", e)
 		return emptyMaze(xSize, ySize)
 	}
 
@@ -409,7 +415,7 @@ func createMaze(xSize, ySize int) *Maze {
 		tx, ty = r.Intn(w), r.Intn(h)
 	}
 	if e := z.SetTreasure(tx, ty); e != nil {
-		fmt.Printf("[ERROR] error setting treasure: %v\n", e)
+		log.Errorf("error setting treasure: %v\n", e)
 		return emptyMaze(xSize, ySize)
 	}
 
