@@ -338,6 +338,18 @@ func (m *Maze) MoveDown() error {
 	return nil
 }
 
+// AllRooms returns all the Rooms in the Maze.
+func (m *Maze) AllRooms() []*mazelib.Room {
+	size := m.Width() * m.Height()
+	rooms := make([]*mazelib.Room, 0, size)
+	for y, row := range m.rooms {
+		for x := range row {
+			rooms = append(rooms, &m.rooms[y][x])
+		}
+	}
+	return rooms
+}
+
 // Creates a maze without any walls
 // Good starting point for additive algorithms
 func emptyMaze(xSize, ySize int) *Maze {

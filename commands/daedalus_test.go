@@ -29,3 +29,22 @@ func TestConfigureRooms(t *testing.T) {
 		}
 	}
 }
+
+func TestAllRooms(t *testing.T) {
+	tests := []struct {
+		w, h int
+		want int
+	}{
+		{1, 1, 1},
+		{1, 2, 2},
+		{2, 2, 4},
+	}
+
+	for _, tt := range tests {
+		m := emptyMaze(tt.w, tt.h)
+		got := len(m.AllRooms())
+		if got != tt.want {
+			t.Errorf("got %d; want %d", got, tt.want)
+		}
+	}
+}
