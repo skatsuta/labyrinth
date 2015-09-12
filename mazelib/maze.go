@@ -21,6 +21,7 @@ package mazelib
 import (
 	"errors"
 	"fmt"
+	"math/rand"
 	"os"
 	"strings"
 )
@@ -267,4 +268,15 @@ func PrintMaze(m MazeI) {
 		}
 		fmt.Println(str)
 	}
+}
+
+// Shuffle shuffles rooms.
+func Shuffle(rooms []*Room) []*Room {
+	l := len(rooms)
+	idx := rand.Perm(l)
+	shfl := make([]*Room, l)
+	for i, j := range idx {
+		shfl[i] = rooms[j]
+	}
+	return shfl
 }
