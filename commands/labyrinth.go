@@ -73,7 +73,8 @@ func init() {
 	RootCmd.PersistentFlags().IntP("height", "y", 10, "height of the laybrinth") // 'h' is used for help already
 	RootCmd.PersistentFlags().IntP("times", "t", 1, "times to solve the laybrinth")
 	RootCmd.PersistentFlags().IntP("max-steps", "m", 500, "Maximum steps before giving up")
-	RootCmd.PersistentFlags().BoolP("interactive", "i", false, "interactive mode")
+	RootCmd.PersistentFlags().BoolP("interactive", "i", false, "runs in interactive mode")
+	RootCmd.PersistentFlags().BoolP("debug", "d", false, "prints debug messages")
 
 	// Bind viper to these flags so viper can read flag values along with config, env, etc.
 	_ = viper.BindPFlag("width", RootCmd.PersistentFlags().Lookup("width"))
@@ -82,6 +83,7 @@ func init() {
 	_ = viper.BindPFlag("times", RootCmd.PersistentFlags().Lookup("times"))
 	_ = viper.BindPFlag("max-steps", RootCmd.PersistentFlags().Lookup("max-steps"))
 	_ = viper.BindPFlag("interactive", RootCmd.PersistentFlags().Lookup("interactive"))
+	_ = viper.BindPFlag("debug", RootCmd.PersistentFlags().Lookup("debug"))
 }
 
 // Read in config file and ENV variables if set.
