@@ -451,7 +451,7 @@ func fullMaze(xSize, ySize int) *Maze {
 func createMaze(xSize, ySize int) *Maze {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 
-	z := recursiveBacktracker(xSize, ySize, r)
+	z := recursiveBacktracker(xSize, ySize)
 
 	z.Braid(viper.GetFloat64("braid"))
 
@@ -477,12 +477,12 @@ func createMaze(xSize, ySize int) *Maze {
 }
 
 // recursiveBacktracker creates a maze by using recursive backtracker algorithm.
-func recursiveBacktracker(xSize, ySize int, r *rand.Rand) *Maze {
+func recursiveBacktracker(xSize, ySize int) *Maze {
 	z := fullMaze(xSize, ySize)
 
 	// pick a starting Room randomly
 	w, h := z.Width(), z.Height()
-	start, err := z.GetRoom(r.Intn(w), r.Intn(h))
+	start, err := z.GetRoom(rand.Intn(w), rand.Intn(h))
 	if err != nil {
 		start, _ = z.GetRoom(0, 0)
 	}
@@ -504,7 +504,7 @@ func recursiveBacktracker(xSize, ySize int, r *rand.Rand) *Maze {
 			continue
 		}
 
-		nb := nbs[r.Intn(len(nbs))]
+		nb := mazelib.Random(nbs)
 		current.Link(nb)
 		stack = append(stack, nb)
 	}
