@@ -214,19 +214,6 @@ func solveMaze() {
 	log.Warnf("stack is now empty... maybe something wrong?\n")
 }
 
-func recPrevDir(m map[mazelib.Direction]bool, dir string) {
-	switch dir {
-	case "up":
-		m[mazelib.S] = true
-	case "down":
-		m[mazelib.N] = true
-	case "right":
-		m[mazelib.W] = true
-	case "left":
-		m[mazelib.E] = true
-	}
-}
-
 // record is a record of directions Icarus moved to.
 type record struct {
 	survey mazelib.Survey
