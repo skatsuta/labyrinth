@@ -59,7 +59,7 @@ func TestDeadEnds(t *testing.T) {
 		want int
 	}{
 		{"2 by 2 empty maze", emptyMaze(2, 2), 0},
-		{"2 by 2 full maze", fullMaze(2, 2), 0},
+		{"2 by 2 full maze", fullMaze(2, 2), 0}, // isolated room is not a dead end
 		{"2 by 2 maze where (0, 0) is linked to (0, 1)", m, 2},
 	}
 
