@@ -27,6 +27,26 @@ func TestIsLinked(t *testing.T) {
 	}
 }
 
+func TestLink(t *testing.T) {
+	r1, r2 := NewRoom(), NewRoom()
+	r1.Link(&r2)
+
+	got := r1.IsLinked(&r2)
+	if !got {
+		t.Errorf("%v should be linked with %v; but %t", r1, r2, got)
+	}
+}
+
+func TestLinks(t *testing.T) {
+	r1, r2 := NewRoom(), NewRoom()
+	r1.Link(&r2)
+
+	got := len(r1.Links())
+	if got != 1 {
+		t.Errorf("# of linked rooms of %v should be 1; but got %d", r1, got)
+	}
+}
+
 func TestShuffle(t *testing.T) {
 	// seed by which rand.Perm() returns indices of reverse order
 	rand.Seed(20)
