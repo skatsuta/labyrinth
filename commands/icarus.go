@@ -258,10 +258,3 @@ func (s *stack) last() *record {
 	}
 	return &s.stk[len(s.stk)-1]
 }
-
-func (s *stack) secondLast() (record, error) {
-	if len(s.stk) < 2 {
-		return record{}, errors.New("secordLast: the length of stack is less than 2")
-	}
-	return s.stk[len(s.stk)-2], nil
-}
