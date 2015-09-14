@@ -120,12 +120,11 @@ func ToReply(in []byte) mazelib.Reply {
 
 func solveMaze() {
 	var (
-		sv    mazelib.Survey
-		dir   mazelib.Direction
-		err   error
-		s     = awake()
-		stack = newStack(record{survey: s})
-		//r     = rand.New(rand.NewSource(time.Now().UnixNano()))
+		sv          mazelib.Survey
+		dir         mazelib.Direction
+		err         error
+		s           = awake()
+		stack       = newStack(record{survey: s})
 		popped      bool
 		count       int
 		interactive = viper.GetBool("interactive")
@@ -164,7 +163,7 @@ func solveMaze() {
 		// delete the directions Icarus has already moved to unless it's a dead end
 		for _, d := range current.dirs {
 			if cand[d] {
-				log.Debugf("direction %s has been already moved. deleting...\n", d.String())
+				log.Debugf("direction %s has been already moved to. deleting...\n", d.String())
 				delete(cand, d)
 			}
 		}
